@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "declaration": true,
+    "esModuleInterop": true,
+    "jsx": "react",
+    "lib": ["dom", "es2017"],
+    "module": "commonjs",
+    "noEmit": true,
+    "strict": true,
+    "target": "es2017"
+  },
+  "include": [
+    "sources/**/*",
+    "tests/**/*"
+  ]
+}
