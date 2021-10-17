@@ -58,6 +58,8 @@ export type TailwindSelectClassNames = {
   };
 };
 
+export type TailwindSelectPartialClassNames = RecursivePartial<TailwindSelectClassNames>;
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const selectClassNames: TailwindSelectClassNames = {
   container: {
@@ -95,7 +97,7 @@ const selectClassNames: TailwindSelectClassNames = {
 export type TailwindSelectBaseProps<T> = {
   inputRef?: Ref<HTMLInputElement>;
   innerRef?: Ref<TailwindSelectRef>;
-  classNames: RecursivePartial<TailwindSelectClassNames>;
+  classNames: TailwindSelectPartialClassNames;
   options: Array<OptionSpec<T>>;
   placeholder?: React.ReactNode;
 
@@ -295,12 +297,12 @@ export function TailwindSelect<T>(props: TailwindSelectProps<T>) {
   }
 
   const menuHeight = Math.min(
-    props.classNames.menu.maxHeight,
-    children.length * props.classNames.option.height,
+    classNames.menu.maxHeight,
+    children.length * classNames.option.height,
   );
 
   const initialScrollOffset = valueIndex !== null
-    ? Math.max(0, valueIndex * props.classNames.option.height - (props.classNames.menu.maxHeight - props.classNames.option.height) / 2)
+    ? Math.max(0, valueIndex * classNames.option.height - (classNames.menu.maxHeight - classNames.option.height) / 2)
     : 0;
 
   const [menuIsOpen, setMenuIsOpen] = useState(false);
@@ -416,8 +418,8 @@ export function TailwindSelect<T>(props: TailwindSelectProps<T>) {
   ), []);
 
   return <>
-    <div className={`relative ${props.classNames.container.always} ${enableIntegratedMode && !displayOpen ? `pointer-events-none opacity-0` : ``}`}>
-      <div className={props.classNames.control.always}>
+    <div className={`relative ${classNames.container.always} ${enableIntegratedMode && !displayOpen ? `pointer-events-none opacity-0` : ``}`}>
+      <div className={classNames.control.always}>
         <div className={`relative`}>
           {(isValue || isPreview || isPlaceholder) && (
             <div className={`absolute inset-0 pointer-events-none select-none`}>
@@ -431,8 +433,8 @@ export function TailwindSelect<T>(props: TailwindSelectProps<T>) {
       </div>
       {displayOpen && (
         <div className={`${enableIntegratedMode ? `` : `absolute`} left-0 ${enableFlexWidth ? `w-64` : `right-0`} z-10`}>
-          <div className={`overflow-auto ${props.classNames.menu.always}`} style={{lineHeight: `${props.classNames.option.height}px`}}>
-            <FixedSizeList ref={virtualizedContainerRef} width={`100%`} height={menuHeight} itemData={children} itemCount={children.length} itemSize={props.classNames.option.height} initialScrollOffset={initialScrollOffset} style={{direction: `rtl`}}>
+          <div className={`overflow-auto ${classNames.menu.always}`} style={{lineHeight: `${classNames.option.height}px`}}>
+            <FixedSizeList ref={virtualizedContainerRef} width={`100%`} height={menuHeight} itemData={children} itemCount={children.length} itemSize={classNames.option.height} initialScrollOffset={initialScrollOffset} style={{direction: `rtl`}}>
               {contentRenderer}
             </FixedSizeList>
           </div>
