@@ -432,7 +432,7 @@ export function TailwindSelect<T>(props: TailwindSelectProps<T>) {
         </div>
       </div>
       {displayOpen && (
-        <div className={`${enableIntegratedMode ? `` : `absolute`} left-0 ${enableFlexWidth ? `w-64` : `right-0`} z-10`}>
+        <div className={`${enableIntegratedMode ? `` : `absolute`} left-0 ${enableFlexWidth ? `w-64` : `right-0`}`}>
           <div className={`overflow-auto ${classNames.menu.always}`} style={{lineHeight: `${classNames.option.height}px`}}>
             <FixedSizeList ref={virtualizedContainerRef} width={`100%`} height={menuHeight} itemData={children} itemCount={children.length} itemSize={classNames.option.height} initialScrollOffset={initialScrollOffset} style={{direction: `rtl`}}>
               {contentRenderer}
