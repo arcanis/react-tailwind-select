@@ -229,64 +229,52 @@ export function TailwindSelect<T>(props: TailwindSelectProps<T>) {
   // Same as `candidateValueIndex`, but only counts nodes with children
   let candidateChildIndex: number | null = null;
 
-  let uncommittedDepth = -1;
   let hasOptionData = false;
 
-  const stack = attachDepth(0, props.options);
+  const traverseOptions = (depth: number, options: Array<OptionSpec<T>>) => {
+    for (const option of options) {
+      optionSpecs.push(option);
 
-  while (stack.length > 0) {
-    const [depth, option] = stack.shift()!;
+      if (isOptionGroup(option)) {
+        const index = children.length;
 
-    if (isOptionGroup(option)) {
-      let nextDepth = depth;
+        let heading: React.ReactNode | undefined;
+        if (typeof option.label !== `undefined`)
+          heading = <Heading classNames={classNames} depth={depth} spec={option}/>;
 
-      if (typeof option.label !== `undefined`) {
-        children.push(<Heading classNames={classNames} depth={depth} spec={option}/>);
-        nextDepth += 1;
+        if (typeof option.keyed !== `undefined`) {
+          const keys = Object.keys(option.keyed);
+          keys.sort((a, b) => a < b ? -1 : a > b ? +1 : 0);
 
-        const depthDiff = uncommittedDepth - depth + 1;
-        if (depthDiff > 0)
-          children.splice(-depthDiff, depthDiff);
+          traverseOptions(depth + 1, keys.map(key => option.keyed![key]));
+        }
 
-        uncommittedDepth = depth;
+        if (typeof option.options !== `undefined`)
+          traverseOptions(depth + 1, option.options);
+
+        if (children.length > index) {
+          children.splice(index, 0, heading);
+        }
+      } else {
+        hasOptionData = true;
+
+        const reference = option.search;
+        if (search !== `` && typeof reference !== `undefined` && !reference.toLowerCase().includes(search.toLowerCase()))
+          continue;
+
+        if (valueIndex === null && option.value === value)
+          valueIndex = optionSpecs.length;
+        if (candidateValueIndex === null && option.value === candidateValue) {
+          candidateValueIndex = optionSpecs.length;
+          candidateChildIndex = children.length;
+        }
+
+        children.push(<Item classNames={classNames} depth={depth} spec={option} isCandidate={candidateValue === option.value} isCurrentValue={value === option.value} onChange={applyValueAndBlur} onMouseEnter={applyCandidateValue} onMouseLeave={resetCandidateValue}/>);
       }
-
-      if (typeof option.keyed !== `undefined`) {
-        const keys = Object.keys(option.keyed);
-        keys.sort((a, b) => a < b ? -1 : a > b ? +1 : 0);
-
-        stack.unshift(...attachDepth(nextDepth, keys.map(key => option.keyed![key])));
-      }
-
-      if (typeof option.options !== `undefined`) {
-        stack.unshift(...attachDepth(nextDepth, option.options));
-      }
-    } else {
-      hasOptionData = true;
-
-      const reference = option.search;
-      if (search !== `` && typeof reference !== `undefined` && !reference.toLowerCase().includes(search.toLowerCase()))
-        continue;
-
-      uncommittedDepth = -1;
-
-      if (valueIndex === null && option.value === value)
-        valueIndex = optionSpecs.length;
-      if (candidateValueIndex === null && option.value === candidateValue) {
-        candidateValueIndex = optionSpecs.length;
-        candidateChildIndex = children.length;
-      }
-
-      children.push(<Item classNames={classNames} depth={depth} spec={option} isCandidate={candidateValue === option.value} isCurrentValue={value === option.value} onChange={applyValueAndBlur} onMouseEnter={applyCandidateValue} onMouseLeave={resetCandidateValue}/>);
     }
+  };
 
-    optionSpecs.push(option);
-  }
-
-  if (uncommittedDepth > -1) {
-    const depthDiff = uncommittedDepth + 1;
-    children.splice(-depthDiff, depthDiff);
-  }
+  traverseOptions(0, props.options);
 
   if (children.length === 0) {
     if (hasOptionData) {
