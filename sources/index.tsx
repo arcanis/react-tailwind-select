@@ -216,10 +216,6 @@ export function TailwindSelect<T>(props: TailwindSelectProps<T>) {
     setSearch(e.target.value);
   }, []);
 
-  const attachDepth = (depth: number, options: Array<OptionSpec<T>>) => options.map(option => {
-    return [depth, option] as const;
-  });
-
   const children: Array<React.ReactNode> = [];
   const optionSpecs: Array<OptionSpec<T>> = [];
 
@@ -233,6 +229,7 @@ export function TailwindSelect<T>(props: TailwindSelectProps<T>) {
 
   const traverseOptions = (depth: number, options: Array<OptionSpec<T>>) => {
     for (const option of options) {
+      const optionSpecIndex = optionSpecs.length;
       optionSpecs.push(option);
 
       if (isOptionGroup(option)) {
@@ -266,9 +263,9 @@ export function TailwindSelect<T>(props: TailwindSelectProps<T>) {
           continue;
 
         if (valueIndex === null && option.value === value)
-          valueIndex = optionSpecs.length;
+          valueIndex = optionSpecIndex;
         if (candidateValueIndex === null && option.value === candidateValue) {
-          candidateValueIndex = optionSpecs.length;
+          candidateValueIndex = optionSpecIndex;
           candidateChildIndex = children.length;
         }
 
