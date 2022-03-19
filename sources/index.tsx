@@ -242,17 +242,20 @@ export function TailwindSelect<T>(props: TailwindSelectProps<T>) {
         if (typeof option.label !== `undefined`)
           heading = <Heading classNames={classNames} depth={depth} spec={option}/>;
 
+        const nextDepth = heading
+          ? depth + 1
+          : depth;
+
         if (typeof option.keyed !== `undefined`) {
           const keys = Object.keys(option.keyed);
           keys.sort((a, b) => a < b ? -1 : a > b ? +1 : 0);
-
-          traverseOptions(depth + 1, keys.map(key => option.keyed![key]));
+          traverseOptions(nextDepth, keys.map(key => option.keyed![key]));
         }
 
         if (typeof option.options !== `undefined`)
-          traverseOptions(depth + 1, option.options);
+          traverseOptions(nextDepth, option.options);
 
-        if (children.length > index) {
+        if (heading && children.length > index) {
           children.splice(index, 0, heading);
         }
       } else {
