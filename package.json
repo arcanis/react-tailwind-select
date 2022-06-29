@@ -1,6 +1,6 @@
 {
   "name": "react-tailwind-select",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "main": "sources/index",
   "license": "MIT",
   "sideEffects": false,
@@ -8,7 +8,7 @@
     "url": "https://github.com/arcanis/react-tailwind-select",
     "type": "git"
   },
-  "packageManager": "yarn@3.0.2",
+  "packageManager": "yarn@3.2.1",
   "dependencies": {
     "deepmerge": "^4.2.2",
     "react-hook-form": "^7.17.4",
@@ -24,8 +24,9 @@
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "rollup": "^2.58.0",
+    "ts-node": "^10.7.0",
     "tslib": "^2.3.1",
-    "typescript": "^4.4.4"
+    "typescript": "^4.6.2"
   },
   "peerDependencies": {
     "react": "*",
@@ -41,6 +42,7 @@
     "main": "lib/index"
   },
   "files": [
+    "sources",
     "lib"
   ]
 }
