@@ -381,7 +381,9 @@ export function TailwindSelect<T>(props: TailwindSelectProps<T>) {
   const rightClickStatus = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const onMouseDown = useCallback((e: React.MouseEvent) => {
-    if (e.button === 2) {
+    if (e.button === 0) {
+      setMenuIsOpen(true);
+    } else if (e.button === 2) {
       if (rightClickStatus.current !== null)
         clearTimeout(rightClickStatus.current);
 
@@ -392,7 +394,7 @@ export function TailwindSelect<T>(props: TailwindSelectProps<T>) {
   }, []);
 
   const onFocus = useCallback(() => {
-    if (rightClickStatus.current !== null) {
+    if (rightClickStatus.current === null) {
       setMenuIsOpen(true);
     }
   }, []);
