@@ -199,7 +199,7 @@ export function TailwindSelect<T>(props: TailwindSelectProps<T>) {
     scrollIntoViewNextRenderRef.current = true;
   }, [applyCandidateValue]);
 
-  const applyValue = useCallback((value: T) => {
+  const applyValue = useCallback((value: T | undefined) => {
     setMenuIsOpen(false);
     setSearch(``);
     setCandidateValue(undefined);
@@ -313,6 +313,18 @@ export function TailwindSelect<T>(props: TailwindSelectProps<T>) {
     setMenuIsOpen(true);
 
     switch (e.key) {
+      case `Backspace`: {
+        if (search === ``) {
+          e.preventDefault();
+
+          if (typeof candidateValue !== `undefined`) {
+            setCandidateValue(undefined);
+          } else {
+            applyValue(undefined);
+          }
+        }
+      } break;
+
       case `PageUp`:
       case `Home`: {
         if (menuIsOpen) {
