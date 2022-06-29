@@ -310,6 +310,8 @@ export function TailwindSelect<T>(props: TailwindSelectProps<T>) {
     : props.placeholder;
 
   const onKeyDown = useCallback((e: React.KeyboardEvent) => {
+    setMenuIsOpen(true);
+
     switch (e.key) {
       case `PageUp`:
       case `Home`: {
@@ -380,6 +382,10 @@ export function TailwindSelect<T>(props: TailwindSelectProps<T>) {
     setMenuIsOpen(true);
   }, []);
 
+  const onContextMenu = useCallback(() => {
+    setMenuIsOpen(false);
+  }, []);
+
   const onBlur = useCallback(() => {
     controller?.field.onBlur();
     setSearch(``);
@@ -417,7 +423,7 @@ export function TailwindSelect<T>(props: TailwindSelectProps<T>) {
               </div>
             </div>
           )}
-          <input ref={inputRef} autoFocus={autoFocus} readOnly={!enableSearch} className={resolveClassNames(classNames.input, {isNormal: true})} style={{width: `100%`}} value={search} onKeyDown={onKeyDown} onChange={onSearchChange} onFocus={onFocus} onBlur={onBlur} onClick={onFocus}/>
+          <input ref={inputRef} autoFocus={autoFocus} readOnly={!enableSearch} className={resolveClassNames(classNames.input, {isNormal: true})} style={{width: `100%`}} value={search} onKeyDown={onKeyDown} onChange={onSearchChange} onFocus={onFocus} onContextMenu={onContextMenu} onBlur={onBlur} onClick={onFocus}/>
         </div>
       </div>
       {displayOpen && (
