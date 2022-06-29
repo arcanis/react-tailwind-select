@@ -1,6 +1,6 @@
 {
   "name": "react-tailwind-select",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "main": "sources/index",
   "license": "MIT",
   "sideEffects": false,

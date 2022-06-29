@@ -202,6 +202,7 @@ export function TailwindSelect<T>(props: TailwindSelectProps<T>) {
   const applyValue = useCallback((value: T) => {
     setMenuIsOpen(false);
     setSearch(``);
+    setCandidateValue(undefined);
     onChange?.(value);
   }, [onChange]);
 
