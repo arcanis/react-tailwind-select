@@ -378,12 +378,23 @@ export function TailwindSelect<T>(props: TailwindSelectProps<T>) {
     }
   }, [optionSpecs, menuIsOpen, candidateValueIndex]);
 
-  const onFocus = useCallback(() => {
-    setMenuIsOpen(true);
+  const rightClickStatus = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const onMouseDown = useCallback((e: React.MouseEvent) => {
+    if (e.button === 2) {
+      if (rightClickStatus.current !== null)
+        clearTimeout(rightClickStatus.current);
+
+      rightClickStatus.current = setTimeout(() => {
+        rightClickStatus.current = null;
+      }, 16);
+    }
   }, []);
 
-  const onContextMenu = useCallback(() => {
-    setMenuIsOpen(false);
+  const onFocus = useCallback(() => {
+    if (rightClickStatus.current !== null) {
+      setMenuIsOpen(true);
+    }
   }, []);
 
   const onBlur = useCallback(() => {
@@ -423,7 +434,7 @@ export function TailwindSelect<T>(props: TailwindSelectProps<T>) {
               </div>
             </div>
           )}
-          <input ref={inputRef} autoFocus={autoFocus} readOnly={!enableSearch} className={resolveClassNames(classNames.input, {isNormal: true})} style={{width: `100%`}} value={search} onKeyDown={onKeyDown} onChange={onSearchChange} onFocus={onFocus} onContextMenu={onContextMenu} onBlur={onBlur} onClick={onFocus}/>
+          <input ref={inputRef} autoFocus={autoFocus} readOnly={!enableSearch} className={resolveClassNames(classNames.input, {isNormal: true})} style={{width: `100%`}} value={search} onKeyDown={onKeyDown} onChange={onSearchChange} onMouseDown={onMouseDown} onFocus={onFocus} onBlur={onBlur} onClick={onFocus}/>
         </div>
       </div>
       {displayOpen && (
