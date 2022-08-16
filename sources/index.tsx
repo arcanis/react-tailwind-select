@@ -99,6 +99,7 @@ export type TailwindSelectBaseProps<T> = {
   innerRef?: Ref<TailwindSelectRef>;
   classNames: TailwindSelectPartialClassNames;
   options: Array<OptionSpec<T>>;
+  header?: React.ReactNode;
   placeholder?: React.ReactNode;
 
   onCandidateChange?: (value: T | undefined) => void;
@@ -439,6 +440,7 @@ export function TailwindSelect<T>(props: TailwindSelectProps<T>) {
 
   return <>
     <div className={`relative ${classNames.container.always} ${enableIntegratedMode && !displayOpen ? `pointer-events-none opacity-0` : ``}`}>
+      {props.header}
       <div className={classNames.control.always}>
         <div className={`relative`}>
           {(isValue || isPreview || isPlaceholder) && (
