@@ -1,7 +1,7 @@
-import deepmerge                                                                                           from 'deepmerge';
-import {Control, useController, UseControllerReturn}                                                       from 'react-hook-form';
-import {FixedSizeList}                                                                                     from 'react-window';
-import React, {MutableRefObject, Ref, useCallback, useImperativeHandle, useLayoutEffect, useRef, useState} from 'react';
+import deepmerge                                                                                                      from 'deepmerge';
+import {Control, useController, UseControllerReturn}                                                                  from 'react-hook-form';
+import {FixedSizeList}                                                                                                from 'react-window';
+import React, {MutableRefObject, Ref, useCallback, useEffect, useImperativeHandle, useLayoutEffect, useRef, useState} from 'react';
 
 type RecursivePartial<T> = {
   [P in keyof T]?: RecursivePartial<T[P]>;
@@ -28,6 +28,8 @@ export type OptionSpec<T> =
 export type TailwindSelectClassNames = {
   container: {
     always: string;
+    isNormal: string;
+    isActive: string;
   };
   control: {
     always: string;
@@ -64,6 +66,8 @@ export type TailwindSelectPartialClassNames = RecursivePartial<TailwindSelectCla
 const selectClassNames: TailwindSelectClassNames = {
   container: {
     always: ``,
+    isNormal: ``,
+    isActive: ``,
   },
   control: {
     always: ``,
@@ -106,8 +110,10 @@ export type TailwindSelectBaseProps<T> = {
 
   enableFlexWidth?: boolean;
   enableIntegratedMode?: boolean;
+  enableOverlayMode?: boolean;
   enablePreview?: boolean;
   enableSearch?: boolean;
+  enableTextMode?: boolean;
 
   autoFocus?: boolean;
   forceOpen?: boolean;
@@ -149,8 +155,10 @@ export function TailwindSelect<T>(props: TailwindSelectProps<T>) {
     autoFocus = false,
     enableFlexWidth = false,
     enableIntegratedMode = false,
+    enableOverlayMode = false,
     enablePreview = true,
     enableSearch = true,
+    enableTextMode = false,
     forceOpen = false,
   } = props;
 
@@ -264,14 +272,18 @@ export function TailwindSelect<T>(props: TailwindSelectProps<T>) {
         if (search !== `` && typeof reference !== `undefined` && !reference.toLowerCase().includes(search.toLowerCase()))
           continue;
 
-        if (valueIndex === null && option.value === value)
+        const isCandidate = getValueId(option.value) === getValueId(candidateValue);
+        const isCurrentValue = getValueId(option.value) === getValueId(value);
+
+        if (valueIndex === null && isCurrentValue)
           valueIndex = optionSpecIndex;
-        if (candidateValueIndex === null && option.value === candidateValue) {
+
+        if (candidateValueIndex === null && isCandidate) {
           candidateValueIndex = optionSpecIndex;
           candidateChildIndex = children.length;
         }
 
-        children.push(<Item classNames={classNames} depth={depth} spec={option} isCandidate={candidateValue === option.value} isCurrentValue={value === option.value} onChange={applyValueAndBlur} onMouseEnter={applyCandidateValue} onMouseLeave={resetCandidateValue}/>);
+        children.push(<Item classNames={classNames} depth={depth} spec={option} isCandidate={isCandidate} isCurrentValue={isCurrentValue} onChange={applyValueAndBlur} onMouseEnter={applyCandidateValue} onMouseLeave={resetCandidateValue}/>);
       }
     }
   };
@@ -311,7 +323,8 @@ export function TailwindSelect<T>(props: TailwindSelectProps<T>) {
     : props.placeholder;
 
   const onKeyDown = useCallback((e: React.KeyboardEvent) => {
-    setMenuIsOpen(true);
+    if (!menuIsOpen)
+      return;
 
     switch (e.key) {
       case `Backspace`: {
@@ -391,7 +404,18 @@ export function TailwindSelect<T>(props: TailwindSelectProps<T>) {
     }
   }, [optionSpecs, menuIsOpen, candidateValueIndex]);
 
+  useEffect(() => {
+    window.addEventListener(`keydown`, onKeyDown);
+    return () => {
+      window.removeEventListener(`keydown`, onKeyDown);
+    };
+  }, [onKeyDown]);
+
   const rightClickStatus = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const onSearchKeyDown = useCallback((e: React.KeyboardEvent) => {
+    setMenuIsOpen(true);
+  }, []);
 
   const onMouseDown = useCallback((e: React.MouseEvent) => {
     if (e.button === 0) {
@@ -439,24 +463,28 @@ export function TailwindSelect<T>(props: TailwindSelectProps<T>) {
   ), []);
 
   return <>
-    <div className={`relative ${classNames.container.always} ${enableIntegratedMode && !displayOpen ? `pointer-events-none opacity-0` : ``}`}>
+    <div className={`relative ${resolveClassNames(classNames.container, {isNormal: !menuIsOpen, isActive: menuIsOpen})} ${enableIntegratedMode && !displayOpen ? `pointer-events-none opacity-0` : ``}`}>
       {props.header}
       <div className={classNames.control.always}>
         <div className={`relative`}>
           {(isValue || isPreview || isPlaceholder) && (
-            <div className={`absolute inset-0 pointer-events-none select-none`}>
-              <div className={`flex items-center ${resolveClassNames(classNames.input, {isPreview, isPlaceholder})}`}>
-                {finalPlaceholder}
+            <div className={`${enableTextMode ? `` : `absolute pointer-events-none`} inset-0 select-none`} onClick={onFocus}>
+              <div className={`flex items-center ${resolveClassNames(classNames.input, {isPreview, isPlaceholder})}`} style={{lineHeight: `${classNames.option.height}px`}}>
+                <div style={{height: classNames.option.height}}>
+                  {finalPlaceholder}
+                </div>
               </div>
             </div>
           )}
-          <input ref={inputRef} autoFocus={autoFocus} readOnly={!enableSearch} className={resolveClassNames(classNames.input, {isNormal: true})} style={{width: `100%`}} value={search} onKeyDown={onKeyDown} onChange={onSearchChange} onMouseDown={onMouseDown} onFocus={onFocus} onBlur={onBlur} onClick={onFocus}/>
+          {!enableTextMode && (
+            <input ref={inputRef} autoFocus={autoFocus} readOnly={!enableSearch} className={resolveClassNames(classNames.input, {isNormal: true})} style={{width: `100%`, lineHeight: classNames.option.height}} value={search} onKeyDown={onSearchKeyDown} onChange={onSearchChange} onMouseDown={onMouseDown} onFocus={onFocus} onBlur={onBlur} onClick={onFocus}/>
+          )}
         </div>
       </div>
       {displayOpen && (
-        <div className={`${enableIntegratedMode ? `` : `absolute`} left-0 ${enableFlexWidth ? `w-64` : `right-0`}`}>
+        <div className={`${enableIntegratedMode ? `` : `absolute`} ${enableOverlayMode ? `top-0` : ``} left-0 ${enableFlexWidth ? `w-64` : `right-0`}`}>
           <div className={`overflow-auto ${classNames.menu.always}`} style={{lineHeight: `${classNames.option.height}px`}}>
-            <FixedSizeList ref={virtualizedContainerRef} width={`100%`} height={menuHeight} itemData={children} itemCount={children.length} itemSize={classNames.option.height} initialScrollOffset={initialScrollOffset} style={{direction: `rtl`}}>
+            <FixedSizeList ref={virtualizedContainerRef} width={`100%`} height={menuHeight} itemData={children} itemCount={children.length} itemSize={classNames.option.height} initialScrollOffset={initialScrollOffset} style={{direction: `rtl`, willChange: ``}}>
               {contentRenderer}
             </FixedSizeList>
           </div>
@@ -464,6 +492,10 @@ export function TailwindSelect<T>(props: TailwindSelectProps<T>) {
       )}
     </div>
   </>;
+}
+
+function getValueId(val: unknown) {
+  return typeof val === `object` && val !== null && typeof (val as any).id === `string` ? (val as any).id : val;
 }
 
 function saveSelection() {

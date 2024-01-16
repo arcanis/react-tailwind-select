@@ -8,9 +8,10 @@
     "url": "https://github.com/arcanis/react-tailwind-select",
     "type": "git"
   },
-  "packageManager": "yarn@3.2.1",
+  "packageManager": "yarn@4.0.0-rc.50",
   "dependencies": {
     "deepmerge": "^4.2.2",
+    "esbuild": "^0.19.2",
     "react-hook-form": "^7.17.4",
     "react-window": "^1.8.6"
   },
