@@ -8,26 +8,46 @@
     "url": "https://github.com/arcanis/react-tailwind-select",
     "type": "git"
   },
-  "packageManager": "yarn@4.0.0-rc.50",
+  "workspaces": [
+    "demo"
+  ],
+  "packageManager": "yarn@4.4.1",
   "dependencies": {
-    "deepmerge": "^4.2.2",
-    "esbuild": "^0.19.2",
+    "arpege": "^2.1.1",
+    "clsx": "^2.1.1",
     "react-hook-form": "^7.17.4",
-    "react-window": "^1.8.6"
+    "react-window": "^1.8.10",
+    "react-window-infinite-loader": "^1.0.9",
+    "use-editable": "^2.3.3",
+    "vite": "^5.4.2"
   },
   "devDependencies": {
+    "@chromatic-com/storybook": "^1.8.0",
     "@rollup/plugin-typescript": "^8.3.0",
-    "@types/react": "^17.0.30",
-    "@types/react-dom": "^17.0.9",
-    "@types/react-window": "^1.8.5",
-    "@yarnpkg/eslint-config": "^0.4.0-rc.8",
-    "eslint": "^7",
-    "react": "^17.0.2",
-    "react-dom": "^17.0.2",
+    "@storybook/addon-essentials": "^8.2.9",
+    "@storybook/addon-interactions": "^8.2.9",
+    "@storybook/addon-links": "^8.2.9",
+    "@storybook/addon-onboarding": "^8.2.9",
+    "@storybook/blocks": "^8.2.9",
+    "@storybook/react": "^8.2.9",
+    "@storybook/react-vite": "^8.2.9",
+    "@storybook/test": "^8.2.9",
+    "@types/node": "^22.5.2",
+    "@types/react": "^18.3.5",
+    "@types/react-dom": "^18.3.0",
+    "@types/react-window": "^1.8.8",
+    "@types/react-window-infinite-loader": "^1",
+    "@yarnpkg/eslint-config": "^2.1.0",
+    "esbuild": "^0.19.2",
+    "eslint": "^9.9.1",
+    "eslint-plugin-storybook": "^0.8.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
     "rollup": "^2.58.0",
+    "storybook": "^8.2.9",
     "ts-node": "^10.7.0",
-    "tslib": "^2.3.1",
-    "typescript": "^4.6.2"
+    "tslib": "^2.7.0",
+    "typescript": "^5.5.4"
   },
   "peerDependencies": {
     "react": "*",
@@ -37,13 +57,21 @@
   "scripts": {
     "prepack": "rm -rf lib && rollup -c",
     "postpack": "rm -rf lib",
-    "test": "yarn tsc"
+    "test": "yarn tsc",
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build"
   },
   "publishConfig": {
     "main": "lib/index"
   },
   "files": [
     "sources",
+    "styles",
     "lib"
-  ]
+  ],
+  "eslintConfig": {
+    "extends": [
+      "plugin:storybook/recommended"
+    ]
+  }
 }

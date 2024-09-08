@@ -1,0 +1,39 @@
+.classic {
+  .cmdk-control {
+    @apply border rounded border-gray-300 px-2;
+  }
+  
+  &.cmdk-is-expanded {
+    .cmdk-control {
+      @apply rounded-b-none border-b-0;
+    }
+  }
+  
+  &.cmdk-is-placeholder .cmdk-placeholder {
+    @apply text-gray-500 italic;
+  }
+  
+  .cmdk-input {
+    outline: 0;
+  }
+  
+  .cmdk-menu {
+    @apply border border-gray-300 rounded-b bg-white;
+  }
+
+  .cmdk-heading {
+    @apply bg-gray-100 px-2 font-bold;
+  }
+  
+  .cmdk-option {
+    @apply px-2;
+  }
+
+  .cmdk-empty {
+    @apply px-2 italic;
+  }
+  
+  .cmdk-option.cmdk-is-candidate-value {
+    @apply bg-gray-100;
+  }
+}

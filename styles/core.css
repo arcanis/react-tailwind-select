@@ -1,0 +1,53 @@
+.cmdk-root {
+  position: relative;
+}
+
+.cmdk--control-inner {
+  display: block;
+  position: relative;
+}
+
+.cmdk--placeholder-wrapper {
+  display: none;
+  user-select: none;
+  
+  .cmdk-is-preview &,
+  .cmdk-is-value &,
+  .cmdk-is-placeholder & {
+    display: block;
+  }
+  
+  .cmdk-text-mode-enabled & {
+    position: absolute;
+    inset: 0;
+    
+    pointer-events: none;
+  }
+}
+
+.cmdk--placeholder-inner {
+  height: var(--cmdk-option-height);
+  line-height: var(--cmdk-option-height);
+  align-content: center;
+}
+
+.cmdk-input {
+  width: 100%;
+  line-height: var(--cmdk-option-height);
+}
+
+.cmdk-menu {
+  scrollbar-gutter: stable;
+}
+
+.cmdk-heading,
+.cmdk-option,
+.cmdk-empty {
+  height: var(--cmdk-option-height);
+  line-height: var(--cmdk-option-height);
+  align-content: center;
+}
+
+.cmdk-option {
+  cursor: pointer;
+}
